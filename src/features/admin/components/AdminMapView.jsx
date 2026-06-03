@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { FaMapMarkerAlt, FaCalendarAlt, FaChartBar, FaSyncAlt } from 'react-icons/fa';
 import { adminService } from '../services/admin.service';
+import { getReportImageUrl } from '../../../utils/mediaUrl';
 
 // Fix default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,7 +18,7 @@ const createPriorityIcon = (priority) => {
   const colors = {
     high:   { fill: '#EF4444', stroke: '#991B1B', label: '!' },
     medium: { fill: '#F59E0B', stroke: '#92400E', label: '~' },
-    low:    { fill: '#22C55E', stroke: '#166534', label: '✓' },
+    low:    { fill: '#22C55E', stroke: '#166534', label: 'OK' },
   };
   const c = colors[priority] || colors.low;
   const svg = `
@@ -115,8 +116,6 @@ export const AdminMapView = () => {
   };
 
   const defaultCenter = [-2.5489, 118.0149];
-  const BACKEND_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-
   return (
     <div className="admin-map-container">
       {/* Header */}
@@ -210,7 +209,7 @@ export const AdminMapView = () => {
                 <div>
                   {report.imageUrl && (
                     <img
-                      src={`${BACKEND_URL}${report.imageUrl}`}
+                      src={report.originalImageAbsoluteUrl || getReportImageUrl(report.reportId, report.originalImageUrl || report.imageUrl)}
                       alt="Foto laporan"
                       className="map-popup-image"
                       onError={e => { e.target.style.display = 'none'; }}

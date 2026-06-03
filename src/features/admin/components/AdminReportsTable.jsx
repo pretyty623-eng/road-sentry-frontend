@@ -16,7 +16,7 @@ export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChan
             <span className={`priority-badge ${priorityClass}`}>
                 {p.label === 'Tinggi' && '!'}
                 {p.label === 'Sedang' && '!'}
-                {p.label === 'Rendah' && '✓'}
+                {p.label === 'Rendah' && 'OK'}
                 {' '}{p.label}
             </span>
         );

@@ -18,6 +18,7 @@ import {
 } from 'react-icons/pi';
 import { TbAlertTriangle } from 'react-icons/tb'
 import { BsLightbulb } from 'react-icons/bs';
+import { getReportImageUrl, resolveMediaUrl } from '../../../utils/mediaUrl';
 
 const STATUS_CONFIG = {
   submitted:   { icon: FiSend,       label: 'Terkirim',  color: 'blue' },
@@ -112,8 +113,8 @@ export default function ReportStatus({ reportId, originalImage }) {
   const isPending   = ['submitted', 'validating', 'validated'].includes(data.status);
   const severity    = SEVERITY_CONFIG[data.aiResult?.severityHint];
   const statusClasses = getStatusClass(data.status);
-  const BACKEND_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-  const originalImageUrl = originalImage || data.imageUrl;
+  const originalImageUrl = data.originalImageAbsoluteUrl || getReportImageUrl(data.reportId, data.originalImageUrl || originalImage || data.imageUrl);
+  const annotatedImageUrl = resolveMediaUrl(data.aiResult?.annotatedImage);
 
   return (
     <div className="report-status-container">
@@ -194,7 +195,7 @@ export default function ReportStatus({ reportId, originalImage }) {
             </div>
 
             {/* Foto perbandingan */}
-            {data.aiResult.annotatedImage && (
+            {annotatedImageUrl && (
               <div>
                 <p className="image-compare-title">Hasil Deteksi</p>
                 <div className="image-grid">
@@ -202,11 +203,11 @@ export default function ReportStatus({ reportId, originalImage }) {
                     <div className="image-box">
                       <p className="image-label">Foto Asli</p>
                       <img
-                        src={`${BACKEND_URL}${originalImageUrl}`}
+                        src={originalImageUrl}
                         alt="Foto asli"
                         className="image-preview"
                         style={{ cursor: 'zoom-in' }}
-                        onClick={() => setLightbox({ src: `${BACKEND_URL}${originalImageUrl}`, alt: 'Foto asli' })}
+                        onClick={() => setLightbox({ src: originalImageUrl, alt: 'Foto asli' })}
                         onError={e => e.target.style.display = 'none'}
                       />
                     </div>
@@ -214,11 +215,11 @@ export default function ReportStatus({ reportId, originalImage }) {
                   <div className="image-box">
                     <p className="image-label">Deteksi AI</p>
                     <img
-                      src={data.aiResult.annotatedImage}
+                      src={annotatedImageUrl}
                       alt="Hasil deteksi AI"
                       className="image-preview"
                       style={{ cursor: 'zoom-in' }}
-                      onClick={() => setLightbox({ src: data.aiResult.annotatedImage, alt: 'Hasil deteksi AI' })}
+                      onClick={() => setLightbox({ src: annotatedImageUrl, alt: 'Hasil deteksi AI' })}
                     />
                   </div>
                 </div>

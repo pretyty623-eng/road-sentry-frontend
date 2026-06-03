@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { ReportFormCard } from '../components/ReportFormCard';
 import { StatsSection } from '../components/StatsSection';
 import { WorkflowSection } from '../components/WorkflowSection';
@@ -12,7 +11,6 @@ import { GradientBackground } from '../../../components/ui/GradientBackground';
 import { Navbar } from '../../../components/common/Navbar';
 import { Footer } from '../../../components/common/Footer';
 import ReportStatus from '../components/ReportStatus';
-import { reportHistoryService } from '../services/reportHistory.service';
 
 export const ReportPage = () => {
   const { submitReport, isSubmitting } = useReportSubmission();
@@ -72,7 +70,6 @@ export const ReportPage = () => {
   // Handler setelah submit berhasil
   const handleSubmitSuccess = useCallback((reportId, imageUrl) => {
     setSubmittedReport({ reportId, imageUrl });
-    reportHistoryService.saveReport({ reportId, imageUrl });
   }, []);
 
   // Reset form untuk buat laporan baru
@@ -140,9 +137,6 @@ export const ReportPage = () => {
                 >
                   + Buat Laporan Baru
                 </button>
-                <Link to={`/status/${submittedReport.reportId}`} className="btn-track-laporan">
-                  Cek Dashboard Laporan
-                </Link>
               </div>
             </div>
           ) : (

@@ -11,6 +11,7 @@ import {
   FaImage,
   FaCheckCircle
 } from 'react-icons/fa';
+import { getReportImageUrl, resolveMediaUrl } from '../../../utils/mediaUrl';
 
 const BREAKDOWN_ITEMS = [
   { key: 'severityScore', label: 'Tingkat Kerusakan', color: '#ef4444' },
@@ -34,6 +35,7 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('foto');
   const [lightbox, setLightbox] = useState(null);
+  const [imageErrors, setImageErrors] = useState({});
 
   useEffect(() => {
     if (!isOpen || !report?.reportId) return;
@@ -41,6 +43,7 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
     const timer = setTimeout(() => {
       setDetail(null);
       setActiveTab('foto');
+      setImageErrors({});
       setLoading(true);
 
       fetch(`${API_BASE_URL}/reports/${report.reportId}`, { signal: controller.signal })
@@ -88,6 +91,8 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
   };
 
   const annotatedImageUrl = getAnnotatedImageUrl();
+  const originalImageUrl = data.originalImageAbsoluteUrl || getReportImageUrl(data.reportId, data.originalImageUrl || data.imageUrl);
+  const aiImageUrl = resolveMediaUrl(annotatedImageUrl);
 
   return (
     <>
@@ -135,13 +140,14 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                       FOTO ASLI
                     </div>
                     <div className="modal-photo-container">
-                      {data.imageUrl ? (
+                      {originalImageUrl && !imageErrors.original ? (
                         <>
                           <img
-                            src={`${API_BASE_URL.replace('/api', '')}${data.imageUrl}`}
+                            src={originalImageUrl}
                             alt="Foto asli"
                             className="modal-photo"
                             onClick={() => setLightbox('original')}
+                            onError={() => setImageErrors(prev => ({ ...prev, original: true }))}
                           />
                           <FaExpand className="modal-expand-icon" />
                         </>
@@ -163,13 +169,14 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                     <div className="modal-photo-container">
                       {loading ? (
                         <div className="modal-photo-placeholder">Memuat...</div>
-                      ) : annotatedImageUrl ? (
+                      ) : aiImageUrl && !imageErrors.ai ? (
                         <>
                           <img
-                            src={annotatedImageUrl}
+                            src={aiImageUrl}
                             alt="Deteksi AI"
                             className="modal-photo"
                             onClick={() => setLightbox('ai')}
+                            onError={() => setImageErrors(prev => ({ ...prev, ai: true }))}
                           />
                           <FaExpand className="modal-expand-icon" />
                         </>
@@ -326,7 +333,8 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
       {lightbox && (
         <div className="modal-lightbox" onClick={() => setLightbox(null)}>
           <img
-            src={lightbox === 'original' ? `${API_BASE_URL.replace('/api', '')}${data.imageUrl}` : annotatedImageUrl}
+            src={lightbox === 'original' ? originalImageUrl : aiImageUrl}
+            alt={lightbox === 'original' ? 'Foto asli' : 'Deteksi AI'}
           />
         </div>
       )}

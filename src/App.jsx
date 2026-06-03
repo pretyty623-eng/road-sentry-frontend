@@ -4,7 +4,6 @@ import { ReportPage } from './features/report/pages/ReportPage';
 import { AdminDashboardPage } from './features/admin/pages/AdminDashboardPage';
 import AdminLoginPage from './features/admin/pages/AdminLoginPage';
 import { AdminReportsPage } from './features/admin/pages/AdminReportsPage';
-import { UserReportsDashboardPage } from './features/report/pages/UserReportsDashboardPage';
 import './styles/globals.css';
 
 function App() {
@@ -17,8 +16,6 @@ function App() {
           <Route index element={<AdminDashboardPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
         </Route>
-        <Route path="/status" element={<UserReportsDashboardPage />} />
-        <Route path="/status/:reportId" element={<UserReportsDashboardPage />} />
       </Routes>
     </Router>
   );
