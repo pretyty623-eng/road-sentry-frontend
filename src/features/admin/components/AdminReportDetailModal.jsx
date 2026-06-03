@@ -194,14 +194,14 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                     <div className="modal-ai-stats-grid">
                       <div className="modal-stat-chip">
                         <div className="modal-stat-chip-label">
-                          <FaExclamationTriangle style={{ marginRight: '4px', fontSize: '9px' }} />
+                          <div style={{ marginRight: '4px', fontSize: '9px' }} />
                           Lubang
                         </div>
                         <div className="modal-stat-chip-value">{detail.aiStats.potholeCount ?? 0}</div>
                       </div>
                       <div className="modal-stat-chip">
                         <div className="modal-stat-chip-label">
-                          <FaExclamationTriangle style={{ marginRight: '4px', fontSize: '9px' }} />
+                          <div style={{ marginRight: '4px', fontSize: '9px' }} />
                           Retak
                         </div>
                         <div className="modal-stat-chip-value">{detail.aiStats.crackCount ?? 0}</div>
