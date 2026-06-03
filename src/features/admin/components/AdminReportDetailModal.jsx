@@ -27,7 +27,7 @@ const PRIORITY_STYLE = {
   low: { bgClass: 'modal-priority-badge-low', textClass: 'modal-priority-label-low', scoreClass: 'modal-priority-score-low', label: 'Rendah' },
 };
 
-// ✅ TAMBAHKAN INI - Base URL untuk API
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange }) => {
@@ -300,14 +300,11 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                 </div>
 
                 <label className="admin-modal-label">Ubah Status</label>
-                console.log("Modal - reportId:", data.reportId);  // ← tambahkan ini
-                console.log("Modal - status:", data.status);      // ← tambahkan ini
-
                 <select
                   className="admin-modal-select"
                   value={data.status}
                   onChange={e => {
-                    console.log("Modal - onChange triggered:", e.target.value); // ← debug
+                    console.log("Modal - onChange triggered:", e.target.value); 
                     onStatusChange(data.reportId, e.target.value);
                   }}
                 >
