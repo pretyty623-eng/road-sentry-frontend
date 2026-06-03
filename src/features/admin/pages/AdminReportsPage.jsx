@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaRoad, FaTachometerAlt, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaTachometerAlt, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
+import { RoadSentryLogo } from '../../../components/ui/RoadSentryLogo';
+import { adminAuthService } from '../services/adminAuth.service';
 import { useAdminReports } from '../hooks/useAdminReports';
 import { AdminFilterBar } from '../components/AdminFilterBar';
 import { AdminReportsTable } from '../components/AdminReportsTable';
 import { AdminReportDetailModal } from '../components/AdminReportDetailModal';
-import '../styles/adminDashboard.css';
 
 export const AdminReportsPage = () => {
+  const navigate = useNavigate();
   const [selectedReport, setSelectedReport] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -26,7 +28,7 @@ export const AdminReportsPage = () => {
   } = useAdminReports();
 
   const handleViewReport = (id) => {
-    const report = reports.find(r => r._id === id);
+    const report = reports.find(r => r.reportId === id);
     setSelectedReport(report);
     setIsModalOpen(true);
   };
@@ -40,6 +42,11 @@ export const AdminReportsPage = () => {
     await updateStatus(id, newStatus);
   };
 
+  const handleLogout = () => {
+    adminAuthService.logout();
+    navigate('/admin/login', { replace: true });
+  };
+
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -48,21 +55,21 @@ export const AdminReportsPage = () => {
       <nav className="admin-navbar">
         <div className="admin-brand">
           <div className="admin-brand-icon">
-            <FaRoad />
+            <RoadSentryLogo size={28} />
           </div>
           ROAD-SENTRY
           <span className="admin-badge">ADMIN</span>
         </div>
         <div className="admin-nav-links">
-          <Link to="/admin/dashboard">
+          <Link to="/admin">
             <FaTachometerAlt /> Dashboard
           </Link>
           <Link to="/admin/reports">
             <FaFileAlt /> Laporan
           </Link>
-          <Link to="/login">
+          <button type="button" onClick={handleLogout}>
             <FaSignOutAlt /> Keluar
-          </Link>
+          </button>
         </div>
       </nav>
 

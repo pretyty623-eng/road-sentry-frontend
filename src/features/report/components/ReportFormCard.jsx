@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { FaCloudUploadAlt, FaMapMarkerAlt, FaSyncAlt, FaPaperPlane, FaSpinner, FaTrash, FaKeyboard } from 'react-icons/fa';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { validateReport } from '../validations/report.schema';
@@ -39,10 +39,11 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
   const [manualCoords, setManualCoords] = useState({ lat: null, lng: null });
   const [dragActive, setDragActive] = useState(false);
 
-  const activeCoords =
+  const activeCoords = useMemo(() => (
     locationMode === 'gps'
       ? { lat: coords.lat, lng: coords.lng }
-      : { lat: manualCoords.lat, lng: manualCoords.lng };
+      : { lat: manualCoords.lat, lng: manualCoords.lng }
+  ), [coords.lat, coords.lng, locationMode, manualCoords.lat, manualCoords.lng]);
 
   const handleMouseMove = useCallback((e) => {
     if (!cardRef.current || !wrapperRef.current) return;
@@ -117,7 +118,9 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
       try {
         const results = await geocodeAddress(value);
         setAddressResults(results);
-      } catch { }
+      } catch {
+        setAddressResults([]);
+      }
       finally { setAddressLoading(false); }
     }, 500);
   }, []);

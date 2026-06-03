@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { ReportFormCard } from '../components/ReportFormCard';
 import { StatsSection } from '../components/StatsSection';
 import { WorkflowSection } from '../components/WorkflowSection';
+import { AboutSection } from '../components/AboutSection';
 import { useReportSubmission } from '../hooks/useReportSubmission';
 import { reportService } from '../services/report.service';
 import { Toast } from '../../../components/ui/Toast';
@@ -10,11 +12,13 @@ import { GradientBackground } from '../../../components/ui/GradientBackground';
 import { Navbar } from '../../../components/common/Navbar';
 import { Footer } from '../../../components/common/Footer';
 import ReportStatus from '../components/ReportStatus';
+import { reportHistoryService } from '../services/reportHistory.service';
 
 export const ReportPage = () => {
   const { submitReport, isSubmitting } = useReportSubmission();
   const workflowRef = useRef(null);
   const statsRef = useRef(null);
+  const formRef = useRef(null);
 
   const [stats, setStats] = useState({ total: 0, pending: 0, resolved: 0 });
   const [statsAnimated, setStatsAnimated] = useState(false);
@@ -68,6 +72,7 @@ export const ReportPage = () => {
   // Handler setelah submit berhasil
   const handleSubmitSuccess = useCallback((reportId, imageUrl) => {
     setSubmittedReport({ reportId, imageUrl });
+    reportHistoryService.saveReport({ reportId, imageUrl });
   }, []);
 
   // Reset form untuk buat laporan baru
@@ -96,6 +101,10 @@ export const ReportPage = () => {
     statsRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
+  const scrollToForm = useCallback(() => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, []);
+
   return (
     <>
       <ParticleCanvas />
@@ -103,17 +112,19 @@ export const ReportPage = () => {
       <Navbar onTentangClick={scrollToWorkflow} onStatistikClick={scrollToStats} />
 
       <main>
+        <AboutSection onLaporanClick={scrollToForm} />
+
         <section className="hero">
           <div className="hero-badge animate-float">
             <div className="hero-badge-dot" />
-            AI-POWERED · GIS INTEGRATION · REAL-TIME
+            PEMANTAUAN JALAN · LAPORAN WARGA · REAL-TIME
           </div>
 
           <h1 className="hero-title">
             Deteksi & Pelaporan <span className="hero-title-accent">Jalan Rusak</span>
           </h1>
           <p className="hero-sub">
-            Sampaikan laporan Anda, biarkan AI memvalidasi, dan sistem memprioritaskan perbaikan secara otomatis.
+            Sampaikan laporan Anda, sistem kami memvalidasi dan memprioritaskan perbaikan secara otomatis.
           </p>
 
           {submittedReport ? (
@@ -122,19 +133,31 @@ export const ReportPage = () => {
                 reportId={submittedReport.reportId}
                 originalImage={submittedReport.imageUrl}
               />
-              <button
-                onClick={handleResetForm}
-                className="btn-reset-laporan"
-              >
-                + Buat Laporan Baru
-              </button>
+              <div className="post-submit-actions">
+                <button
+                  onClick={handleResetForm}
+                  className="btn-reset-laporan"
+                >
+                  + Buat Laporan Baru
+                </button>
+                <Link to={`/status/${submittedReport.reportId}`} className="btn-track-laporan">
+                  Cek Dashboard Laporan
+                </Link>
+              </div>
             </div>
           ) : (
-            <ReportFormCard onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+            <div ref={formRef}>
+              <ReportFormCard onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+            </div>
           )}
 
           <div ref={statsRef} style={{ scrollMarginTop: '80px' }}>
             <StatsSection stats={stats} animated={statsAnimated} />
+          </div>
+
+          <div className="scroll-hint">
+            <span>Scroll untuk informasi lebih lanjut</span>
+            <div className="scroll-arrow" />
           </div>
 
         </section>

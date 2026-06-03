@@ -2,14 +2,15 @@ import { FaImage, FaEye } from 'react-icons/fa';
 import { REPORT_STATUS, PRIORITY_LABELS } from '../constants/reportStatus';
 
 export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChange }) => {
-    console.log(reports);
     const getPriorityBadge = (priority) => {
         const p = PRIORITY_LABELS[priority] || PRIORITY_LABELS.low;
 
-        let priorityClass = '';
-        if (priority === 'high') priorityClass = 'priority-high';
-        else if (priority === 'medium') priorityClass = 'priority-medium';
-        else priorityClass = 'priority-low';
+        const priorityClass =
+            priority === 'high'
+                ? 'priority-high'
+                : priority === 'medium'
+                    ? 'priority-medium'
+                    : 'priority-low';
 
         return (
             <span className={`priority-badge ${priorityClass}`}>
@@ -24,15 +25,20 @@ export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChan
     const getStatusBadge = (status) => {
         const s = REPORT_STATUS[status] || REPORT_STATUS.submitted;
 
-        let statusClass = '';
-        if (status === 'submitted') statusClass = 'status-submitted';
-        else if (status === 'validated') statusClass = 'status-validated';
-        else if (status === 'prioritized') statusClass = 'status-prioritized';
-        else if (status === 'reviewed') statusClass = 'status-reviewed';
-        else if (status === 'in_progress') statusClass = 'status-progress';
-        else if (status === 'resolved') statusClass = 'status-resolved';
-        else if (status === 'rejected') statusClass = 'status-rejected';
-        else statusClass = 'status-submitted';
+        const statusClass =
+            status === 'validated'
+                ? 'status-validated'
+                : status === 'prioritized'
+                    ? 'status-prioritized'
+                    : status === 'reviewed'
+                        ? 'status-reviewed'
+                        : status === 'in_progress'
+                            ? 'status-progress'
+                            : status === 'resolved'
+                                ? 'status-resolved'
+                                : status === 'rejected'
+                                    ? 'status-rejected'
+                                    : 'status-submitted';
 
         return (
             <span className={`status-badge ${statusClass}`}>

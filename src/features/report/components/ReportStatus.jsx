@@ -113,6 +113,7 @@ export default function ReportStatus({ reportId, originalImage }) {
   const severity    = SEVERITY_CONFIG[data.aiResult?.severityHint];
   const statusClasses = getStatusClass(data.status);
   const BACKEND_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+  const originalImageUrl = originalImage || data.imageUrl;
 
   return (
     <div className="report-status-container">
@@ -197,17 +198,19 @@ export default function ReportStatus({ reportId, originalImage }) {
               <div>
                 <p className="image-compare-title">Hasil Deteksi</p>
                 <div className="image-grid">
-                  <div className="image-box">
-                    <p className="image-label">Foto Asli</p>
-                    <img
-                      src={`${BACKEND_URL}${originalImage}`}
-                      alt="Foto asli"
-                      className="image-preview"
-                      style={{ cursor: 'zoom-in' }}
-                      onClick={() => setLightbox({ src: `${BACKEND_URL}${originalImage}`, alt: 'Foto asli' })}
-                      onError={e => e.target.style.display = 'none'}
-                    />
-                  </div>
+                  {originalImageUrl && (
+                    <div className="image-box">
+                      <p className="image-label">Foto Asli</p>
+                      <img
+                        src={`${BACKEND_URL}${originalImageUrl}`}
+                        alt="Foto asli"
+                        className="image-preview"
+                        style={{ cursor: 'zoom-in' }}
+                        onClick={() => setLightbox({ src: `${BACKEND_URL}${originalImageUrl}`, alt: 'Foto asli' })}
+                        onError={e => e.target.style.display = 'none'}
+                      />
+                    </div>
+                  )}
                   <div className="image-box">
                     <p className="image-label">Deteksi AI</p>
                     <img

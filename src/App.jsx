@@ -1,15 +1,24 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { PrivateRoute } from './app/PrivateRoute';
 import { ReportPage } from './features/report/pages/ReportPage';
-import './styles/globals.css';
 import { AdminDashboardPage } from './features/admin/pages/AdminDashboardPage';
+import AdminLoginPage from './features/admin/pages/AdminLoginPage';
+import { AdminReportsPage } from './features/admin/pages/AdminReportsPage';
+import { UserReportsDashboardPage } from './features/report/pages/UserReportsDashboardPage';
+import './styles/globals.css';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<ReportPage />} />
-        <Route path="/admin" element={<AdminDashboardPage />} />
-        <Route path="/status/:reportId" element={<div>Status Page - Coming Soon</div>} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<PrivateRoute />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="reports" element={<AdminReportsPage />} />
+        </Route>
+        <Route path="/status" element={<UserReportsDashboardPage />} />
+        <Route path="/status/:reportId" element={<UserReportsDashboardPage />} />
       </Routes>
     </Router>
   );

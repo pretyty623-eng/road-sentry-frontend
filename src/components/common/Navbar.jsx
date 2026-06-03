@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FiBarChart2, FiInfo, FiLogIn } from 'react-icons/fi';
 import { RoadSentryLogo } from '../ui/RoadSentryLogo';
 
 export const Navbar = ({ onTentangClick, onStatistikClick }) => {
@@ -11,9 +12,22 @@ export const Navbar = ({ onTentangClick, onStatistikClick }) => {
         <span className="brand-text">ROAD<span>-SENTRY</span></span>
       </div>
       <div className="nav-links">
-        <button onClick={onTentangClick} className="nav-link">Tentang</button>
-        <button onClick={onStatistikClick} className="nav-link">Statistik</button>
-        <Link to="/admin" className="btn-login">Admin Dashboard</Link>
+        {onTentangClick && (
+          <button onClick={onTentangClick} className="nav-link">
+            <FiInfo />
+            Tentang
+          </button>
+        )}
+        {onStatistikClick && (
+          <button onClick={onStatistikClick} className="nav-link">
+            <FiBarChart2 />
+            Statistik
+          </button>
+        )}
+        <Link to="/admin/login" className="btn-login">
+          <FiLogIn />
+          LOGIN
+        </Link>
       </div>
     </nav>
   );

@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
-    FaRoad,
     FaTachometerAlt,
     FaFileAlt,
     FaSignOutAlt
 } from 'react-icons/fa';
+import { adminAuthService } from '../services/adminAuth.service';
 import { adminService } from '../services/admin.service';
 import { useAdminReports } from '../hooks/useAdminReports';
 import { AdminStatsCard } from '../components/AdminStatsCard';
@@ -14,9 +14,11 @@ import { AdminMapView } from '../components/AdminMapView';
 import { AdminFilterBar } from '../components/AdminFilterBar';
 import { AdminReportsTable } from '../components/AdminReportsTable';
 import { AdminReportDetailModal } from '../components/AdminReportDetailModal';
+import { RoadSentryLogo } from '../../../components/ui/RoadSentryLogo';
 
 
 export const AdminDashboardPage = () => {
+    const navigate = useNavigate();
     const [dashboardStats, setDashboardStats] = useState({
         total: 0,
         pending: 0,
@@ -154,18 +156,19 @@ export const AdminDashboardPage = () => {
         setSelectedReport(null);
     };
 
+    const handleLogout = () => {
+        adminAuthService.logout();
+        navigate('/admin/login', { replace: true });
+    };
+
     const handleStatusChange = async (id, newStatus) => {
-    console.log(" handleStatusChange called:", id, "→", newStatus); 
-    const success = await updateStatus(id, newStatus);
-    if (success) {
-        console.log(" Update success, refreshing...");
-        fetchDashboardStats();
-        fetchUrgentReports();
-        refresh(); 
-    } else {
-        console.log(" Update failed");
-    }
-};
+        const success = await updateStatus(id, newStatus);
+        if (success) {
+            fetchDashboardStats();
+            fetchUrgentReports();
+            refresh();
+        }
+    };
 
     const totalPages = Math.ceil(total / limit);
 
@@ -175,7 +178,7 @@ export const AdminDashboardPage = () => {
             <nav className="admin-navbar">
                 <div className="admin-brand">
                     <div className="admin-brand-icon">
-                        <FaRoad />
+                       <RoadSentryLogo size={28} /> 
                     </div>
                     ROAD-SENTRY
                     <span className="admin-badge">ADMIN</span>
@@ -187,9 +190,9 @@ export const AdminDashboardPage = () => {
                     <a href="#reports-section">
                         <FaFileAlt /> Laporan
                     </a>
-                    <Link to="/">
+                    <button type="button" onClick={handleLogout}>
                         <FaSignOutAlt /> Keluar
-                    </Link>
+                    </button>
                 </div>
             </nav>
 
@@ -279,3 +282,4 @@ export const AdminDashboardPage = () => {
         </div>
     );
 };
+

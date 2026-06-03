@@ -1,38 +1,31 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
-import { AdminLayout } from './layouts/AdminLayout';
+import { PrivateRoute } from './PrivateRoute';
 import { ReportPage } from '../features/report/pages/ReportPage';
 import { SubmissionStatusPage } from '../features/report/pages/SubmissionStatusPage';
 import { AdminDashboardPage } from '../features/admin/pages/AdminDashboardPage';
 import { AdminReportsPage } from '../features/admin/pages/AdminReportsPage';
+import AdminLoginPage from '../features/admin/pages/AdminLoginPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
     children: [
-      {
-        index: true,
-        element: <ReportPage />
-      },
-      {
-        path: 'status/:reportId',
-        element: <SubmissionStatusPage />
-      }
+      { index: true, element: <ReportPage /> },
+      { path: 'status/:reportId', element: <SubmissionStatusPage /> }
     ]
   },
   {
+    path: '/admin/login',
+    element: <AdminLoginPage />,
+  },
+  {
     path: '/admin',
-    element: <AdminLayout />,
+    element: <PrivateRoute />,
     children: [
-      {
-        index: true,
-        element: <AdminDashboardPage />
-      },
-      {
-        path: 'reports',
-        element: <AdminReportsPage />
-      }
+      { index: true, element: <AdminDashboardPage /> },
+      { path: 'reports', element: <AdminReportsPage /> }
     ]
   }
 ]);
