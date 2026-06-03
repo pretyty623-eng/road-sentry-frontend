@@ -139,7 +139,7 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                       {data.imageUrl ? (
                         <>
                           <img
-                            src={`http://localhost:5000${data.imageUrl}`}
+                           src={`${API_BASE_URL.replace('/api', '')}${data.imageUrl}`}
                             alt="Foto asli"
                             className="modal-photo"
                             onClick={() => setLightbox('original')}
@@ -324,8 +324,7 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
       {lightbox && (
         <div className="modal-lightbox" onClick={() => setLightbox(null)}>
           <img
-            src={lightbox === 'original' ? `http://localhost:5000${data.imageUrl}` : annotatedImageUrl}
-            alt="Fullscreen"
+           src={lightbox === 'original' ? `${API_BASE_URL.replace('/api', '')}${data.imageUrl}` : annotatedImageUrl}
           />
         </div>
       )}
