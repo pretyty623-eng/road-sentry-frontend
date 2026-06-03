@@ -155,12 +155,17 @@ export const AdminDashboardPage = () => {
     };
 
     const handleStatusChange = async (id, newStatus) => {
-        const success = await updateStatus(id, newStatus);
-        if (success) {
-            fetchDashboardStats();
-            fetchUrgentReports();
-        }
-    };
+    console.log(" handleStatusChange called:", id, "→", newStatus); 
+    const success = await updateStatus(id, newStatus);
+    if (success) {
+        console.log(" Update success, refreshing...");
+        fetchDashboardStats();
+        fetchUrgentReports();
+        refresh(); 
+    } else {
+        console.log(" Update failed");
+    }
+};
 
     const totalPages = Math.ceil(total / limit);
 

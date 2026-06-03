@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { 
-  FaTimes, 
-  FaMapMarkerAlt, 
-  FaCalendarAlt, 
+import {
+  FaTimes,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
   FaExpand,
   FaCamera,
   FaRobot,
@@ -139,7 +139,7 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                       {data.imageUrl ? (
                         <>
                           <img
-                           src={`${API_BASE_URL.replace('/api', '')}${data.imageUrl}`}
+                            src={`${API_BASE_URL.replace('/api', '')}${data.imageUrl}`}
                             alt="Foto asli"
                             className="modal-photo"
                             onClick={() => setLightbox('original')}
@@ -300,10 +300,16 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
                 </div>
 
                 <label className="admin-modal-label">Ubah Status</label>
+                console.log("Modal - reportId:", data.reportId);  // ← tambahkan ini
+                console.log("Modal - status:", data.status);      // ← tambahkan ini
+
                 <select
                   className="admin-modal-select"
                   value={data.status}
-                  onChange={e => onStatusChange(data.reportId, e.target.value)}
+                  onChange={e => {
+                    console.log("Modal - onChange triggered:", e.target.value); // ← debug
+                    onStatusChange(data.reportId, e.target.value);
+                  }}
                 >
                   <option value="submitted">Dikirim</option>
                   <option value="validated">Tervalidasi</option>
@@ -324,7 +330,7 @@ export const AdminReportDetailModal = ({ isOpen, report, onClose, onStatusChange
       {lightbox && (
         <div className="modal-lightbox" onClick={() => setLightbox(null)}>
           <img
-           src={lightbox === 'original' ? `${API_BASE_URL.replace('/api', '')}${data.imageUrl}` : annotatedImageUrl}
+            src={lightbox === 'original' ? `${API_BASE_URL.replace('/api', '')}${data.imageUrl}` : annotatedImageUrl}
           />
         </div>
       )}
