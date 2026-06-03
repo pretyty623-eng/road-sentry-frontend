@@ -1,13 +1,12 @@
-
 import { Link } from 'react-router-dom';
-import { FaRoad } from 'react-icons/fa';
+import { RoadSentryLogo } from '../ui/RoadSentryLogo';
 
 export const Navbar = ({ onTentangClick, onStatistikClick }) => {
   return (
     <nav className="navbar">
       <div className="brand">
         <div className="brand-icon">
-          <FaRoad />
+          <RoadSentryLogo size={32} />
         </div>
         <span className="brand-text">ROAD<span>-SENTRY</span></span>
       </div>

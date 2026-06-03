@@ -14,12 +14,12 @@ import ReportStatus from '../components/ReportStatus';
 export const ReportPage = () => {
   const { submitReport, isSubmitting } = useReportSubmission();
   const workflowRef = useRef(null);
-  const statsRef = useRef(null);  
-  
+  const statsRef = useRef(null);
+
   const [stats, setStats] = useState({ total: 0, pending: 0, resolved: 0 });
   const [statsAnimated, setStatsAnimated] = useState(false);
   const [toast, setToast] = useState(null);
-  
+
   // State untuk status setelah submit
   const [submittedReport, setSubmittedReport] = useState(null);
 
@@ -53,10 +53,10 @@ export const ReportPage = () => {
       },
       { threshold: 0.5 }
     );
-    
+
     const statsSection = document.querySelector('.stats-bar');
     if (statsSection) observer.observe(statsSection);
-    
+
     return () => observer.disconnect();
   }, [statsAnimated]);
 
@@ -75,18 +75,18 @@ export const ReportPage = () => {
     setSubmittedReport(null);
   }, []);
 
- const handleSubmit = useCallback(async (data) => {
-  try {
-    const response = await submitReport(data);
-    showToast('Laporan terkirim! AI sedang memvalidasi...', 'success');
+  const handleSubmit = useCallback(async (data) => {
+    try {
+      const response = await submitReport(data);
+      showToast('Laporan terkirim! AI sedang memvalidasi...', 'success');
 
-    handleSubmitSuccess(response.reportId, response.imageUrl);
-    
-  } catch (error) {
-    console.error(error);
-    showToast('Gagal mengirim laporan', 'error');
-  }
-}, [submitReport, showToast, handleSubmitSuccess]);
+      handleSubmitSuccess(response.reportId, response.imageUrl);
+
+    } catch (error) {
+      console.error(error);
+      showToast('Gagal mengirim laporan', 'error');
+    }
+  }, [submitReport, showToast, handleSubmitSuccess]);
 
   const scrollToWorkflow = useCallback(() => {
     workflowRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -101,14 +101,14 @@ export const ReportPage = () => {
       <ParticleCanvas />
       <GradientBackground />
       <Navbar onTentangClick={scrollToWorkflow} onStatistikClick={scrollToStats} />
-      
+
       <main>
         <section className="hero">
           <div className="hero-badge animate-float">
             <div className="hero-badge-dot" />
             AI-POWERED · GIS INTEGRATION · REAL-TIME
           </div>
-          
+
           <h1 className="hero-title">
             Deteksi & Pelaporan <span className="hero-title-accent">Jalan Rusak</span>
           </h1>
@@ -133,21 +133,17 @@ export const ReportPage = () => {
             <ReportFormCard onSubmit={handleSubmit} isSubmitting={isSubmitting} />
           )}
 
-          <div ref={statsRef}>
+          <div ref={statsRef} style={{ scrollMarginTop: '80px' }}>
             <StatsSection stats={stats} animated={statsAnimated} />
           </div>
 
-          <div className="scroll-hint">
-            <span>Scroll untuk informasi lebih lanjut</span>
-            <div className="scroll-arrow" />
-          </div>
         </section>
 
         <WorkflowSection ref={workflowRef} />
       </main>
-      
+
       <Footer />
-      
+
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </>
   );
