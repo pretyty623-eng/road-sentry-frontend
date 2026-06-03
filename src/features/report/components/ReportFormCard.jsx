@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { FaCloudUploadAlt, FaMapMarkerAlt, FaSyncAlt, FaPaperPlane, FaSpinner, FaTrash, FaKeyboard } from 'react-icons/fa';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { validateReport } from '../validations/report.schema';
@@ -37,12 +37,12 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
   const [addressResults, setAddressResults] = useState([]);
   const [addressLoading, setAddressLoading] = useState(false);
   const [manualCoords, setManualCoords] = useState({ lat: null, lng: null });
+  const [dragActive, setDragActive] = useState(false);
 
-  const activeCoords = useMemo(() => (
+  const activeCoords =
     locationMode === 'gps'
       ? { lat: coords.lat, lng: coords.lng }
-      : { lat: manualCoords.lat, lng: manualCoords.lng }
-  ), [coords.lat, coords.lng, locationMode, manualCoords.lat, manualCoords.lng]);
+      : { lat: manualCoords.lat, lng: manualCoords.lng };
 
   const handleMouseMove = useCallback((e) => {
     if (!cardRef.current || !wrapperRef.current) return;
@@ -82,6 +82,30 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }, []);
 
+  // Handler untuk drag & drop
+  const handleDrag = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setFormData(prev => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+      setErrors(prev => ({ ...prev, image: null }));
+    }
+  }, []);
+
   const handleAddressChange = useCallback((e) => {
     const value = e.target.value;
     setAddressQuery(value);
@@ -93,9 +117,7 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
       try {
         const results = await geocodeAddress(value);
         setAddressResults(results);
-      } catch {
-        setAddressResults([]);
-      }
+      } catch { }
       finally { setAddressLoading(false); }
     }, 500);
   }, []);
@@ -169,10 +191,14 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
           />
           {errors.description && <div className="error-message">{errors.description}</div>}
 
-          {/* ✅ Upload area - FIXED bubbling */}
+          {/* Upload area - dengan Drag & Drop */}
           <div
-            className="upload-area"
-            onClick={!imagePreview ? () => fileInputRef.current?.click() : undefined}
+            className={`upload-area ${dragActive ? 'drag-active' : ''}`}
+            onClick={() => !imagePreview && fileInputRef.current?.click()}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
             style={{ cursor: imagePreview ? 'default' : 'pointer' }}
           >
             {imagePreview ? (
@@ -195,7 +221,7 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
                 </div>
                 <p>Foto siap diupload · klik foto untuk preview</p>
                 <span
-                  style={{ fontSize: '0.75rem', color: 'var(--color-text-tertiary)', cursor: 'pointer' }}
+                  style={{ fontSize: '0.75rem', color: '#94a3b8', cursor: 'pointer' }}
                   onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
                 >
                   Ganti foto
@@ -205,18 +231,16 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
               <>
                 <FaCloudUploadAlt className="upload-icon" />
                 <p>Upload foto jalan rusak</p>
-                <span>AI akan memvalidasi foto secara otomatis · JPG, PNG maks. 5MB</span>
+                <span>Drag & drop atau klik untuk upload · JPG, PNG maks. 5MB</span>
               </>
             )}
 
-            {/* ✅ Satu-satunya input, dengan stopPropagation */}
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              className="hidden-input"
+              style={{ display: 'none' }}
               onChange={handleImageChange}
-              onClick={(e) => e.stopPropagation()}
             />
           </div>
           {errors.image && <div className="error-message">{errors.image}</div>}
@@ -241,19 +265,18 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
 
           {locationMode === 'gps' && (
             <div className="gps-bar">
-              <div className="gps-dot" />
-              <span>
-                <FaMapMarkerAlt style={{ marginRight: '6px' }} />
-                GPS Auto-detect:
-                <strong>
+              <FaMapMarkerAlt className="gps-icon" />
+              <div className="gps-text">
+                <span className="gps-label">GPS Auto-detect</span>
+                <strong className={`gps-status ${gpsError ? 'error' : gpsLoading ? 'loading' : 'success'}`}>
                   {gpsLoading
-                    ? ' Mendeteksi...'
+                    ? 'Mendeteksi lokasi...'
                     : gpsError
-                    ? ' Gagal'
-                    : ` ${coords.lat?.toFixed(6)}, ${coords.lng?.toFixed(6)}`}
+                      ? 'Lokasi tidak terdeteksi'
+                      : `${coords.lat?.toFixed(6)}, ${coords.lng?.toFixed(6)}`}
                 </strong>
-              </span>
-              <button type="button" onClick={getLocation} className="gps-refresh">
+              </div>
+              <button type="button" onClick={getLocation} className="gps-refresh" title="Refresh lokasi">
                 <FaSyncAlt />
               </button>
             </div>
@@ -295,7 +318,7 @@ export const ReportFormCard = ({ onSubmit, isSubmitting }) => {
             lat={activeCoords.lat}
             lng={activeCoords.lng}
             submitted={submitted}
-            onLocationChange={() => undefined}
+            onLocationChange={() => { }}
           />
 
           <button
