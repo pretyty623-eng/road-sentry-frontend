@@ -6,8 +6,13 @@ export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChan
     const getPriorityBadge = (priority) => {
         const p = PRIORITY_LABELS[priority] || PRIORITY_LABELS.low;
 
+        let priorityClass = '';
+        if (priority === 'high') priorityClass = 'priority-high';
+        else if (priority === 'medium') priorityClass = 'priority-medium';
+        else priorityClass = 'priority-low';
+
         return (
-            <span className={`priority-badge ${p.color}`}>
+            <span className={`priority-badge ${priorityClass}`}>
                 {p.label === 'Tinggi' && '!'}
                 {p.label === 'Sedang' && '!'}
                 {p.label === 'Rendah' && '✓'}
@@ -18,8 +23,19 @@ export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChan
 
     const getStatusBadge = (status) => {
         const s = REPORT_STATUS[status] || REPORT_STATUS.submitted;
+
+        let statusClass = '';
+        if (status === 'submitted') statusClass = 'status-submitted';
+        else if (status === 'validated') statusClass = 'status-validated';
+        else if (status === 'prioritized') statusClass = 'status-prioritized';
+        else if (status === 'reviewed') statusClass = 'status-reviewed';
+        else if (status === 'in_progress') statusClass = 'status-progress';
+        else if (status === 'resolved') statusClass = 'status-resolved';
+        else if (status === 'rejected') statusClass = 'status-rejected';
+        else statusClass = 'status-submitted';
+
         return (
-            <span className={`status-badge ${s.color}`}>
+            <span className={`status-badge ${statusClass}`}>
                 {s.label}
             </span>
         );
@@ -61,7 +77,7 @@ export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChan
                 </thead>
                 <tbody>
                     {reports.map((report) => (
-                       <tr key={report.reportId}>
+                        <tr key={report.reportId}>
                             <td>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <div className="thumbnail"><FaImage /></div>
@@ -74,7 +90,7 @@ export const AdminReportsTable = ({ reports, loading, onViewReport, onStatusChan
                                 </div>
                             </td>
                             <td style={{ fontFamily: 'monospace', fontSize: '0.7rem' }}>
-                                {report.location?.lat}, {report.location?.lng}
+                                {report.location?.lat?.toFixed(4)}, {report.location?.lng?.toFixed(4)}
                             </td>
                             <td>{report.description?.substring(0, 60)}...</td>
                             <td>{getPriorityBadge(report.priorityLabel || 'low')}</td>
